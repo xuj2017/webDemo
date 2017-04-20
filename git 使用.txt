@@ -1,0 +1,3 @@
+git pull --rebase origin master
+
+git rm ... -r
