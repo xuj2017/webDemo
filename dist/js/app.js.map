@@ -1,1 +1,1 @@
-{"version":3,"sources":["app.js"],"names":["a","b"],"mappings":"YAAA,IAAIA,GAAI,EACJC,EAAI","file":"app.js","sourcesContent":["let a = 6;\r\nlet b = 7;"]}
+{"version":3,"sources":["app.js"],"names":["a","b","console","log","Number","isFinite"],"mappings":"YAAA,IAAIA,GAAI,EACJC,EAAI,CADRC,SAAQC,IAARC,OAAAC,SAAAL","file":"app.js","sourcesContent":["let a = 6;\r\nlet b = 7;\r\nconsole.log(Number.isFinite(a));"]}
