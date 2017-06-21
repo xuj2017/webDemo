@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --watch webpack.config.js --exec \"webpack-dev-server --env development\""
   },
   "author": "",
   "license": "ISC",
@@ -22,11 +23,13 @@
     "html-webpack-plugin": "^2.28.0",
     "html-withimg-loader": "^0.1.16",
     "node-sass": "^4.5.3",
+    "nodemon": "^1.11.0",
     "path": "^0.12.7",
     "sass-loader": "^6.0.6",
     "scss-loader": "0.0.1",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
-    "webpack": "^2.6.1"
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.5.0"
   }
 }

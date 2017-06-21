@@ -1,7 +1,68 @@
-body,html{
+body,
+html {
     padding: 0;
     margin: 0;
 }
-h1{
+
+h1 {
     background: url(../img/popups.png);
+}
+//兼容至ie8+(不包括ie8）
+//html:<div class="parent"><div class="child">this is content</div></div>
+@mixin center($width: null, $height: null) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    @if not $width and not $height {
+        transform: translate(-50%, -50%);
+    }
+    @else if $width and $height {
+        width: $width;
+        height: $height;
+        margin: -($width / 2) 0 -($height / 2) 0;
+    }
+    @else if not $height {
+        width: $width;
+        margin-left: -($width / 2);
+        transform: translateY(-50%);
+    }
+    @else {
+        height: $height;
+        margin-top: -($height / 2);
+        transform: translateX(-50%);
+    }
+}
+
+.parent{
+    position: relative;
+    width: 500px;
+    height: 500px;
+    background-color: #eee;
+    .child{
+        @include center(300px);
+        background: #000;
+        color: #fff;
+    }
+}
+//当只知道父元素的宽高，子元素宽高未知，切需要兼容至ie6（css3属性不支持）
+//html:<div class="a"><div class="b"><div class="c"> this is content<div></div></div>
+.a {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    background-color: blue;
+    .b{
+        position: absolute;
+        top:50%;
+        left: 50%;
+        width: 300px;
+        
+        .c{
+            position: relative;
+            top:-50%;
+            left: -50%;
+            background: #000;
+            color: #fff;
+        }
+    }
 }
