@@ -1270,7 +1270,7 @@ js操作获取和设置cookie
 
 ### 写一个function，清除字符串前后的空格。（兼容所有浏览器）
 
-```
+```javascript
 function trim(str) {
 
     if (str & typeof str === "string") {
@@ -1286,7 +1286,7 @@ function trim(str) {
  1. 在数据集之中，选择一个元素作为”基准”（pivot）。 
  2. 所有小于”基准”的元素，都移到”基准”的左边；所有大于”基准”的元素，都移到”基准”的右边。 
  3. 对”基准”左边和右边的两个子集，不断重复第一步和第二步，直到所有子集只剩下一个元素为止。
- ```
+ ```javascript
  function quickSort(arr){
     if (arr.length <= 1){return arr};
     var pivotIndex = Math.floor(arr.length / 2);
@@ -1308,7 +1308,7 @@ function trim(str) {
  1. 创建一个新的数组存放结果。 
  2. 创建一个空对象
  3. 判断数组值是否已经保存在object中，未保存则push到新数组并用object[arrayItem]=1的方式记录保存
- ```
+ ```javascript
  Array.prototype.unique3 = function(){
     var res = [];
     var json = {};
