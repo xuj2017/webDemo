@@ -2,7 +2,7 @@
 title: 前端面试题
 date: 2017-07-17 10:34:53
 tags: [javascript,web开发]
-categories: 前端
+categories: 前端面试
 ---
 
 ## 说说你对闭包的理解
