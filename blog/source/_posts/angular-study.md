@@ -22,3 +22,18 @@ export class AppComponent {
 }
 //控制器
 ```
+
+## 2.安装第三方依赖
+
+```
+npm install jquery @types/jquery --save-dev  //@types/jquery为了让ts使用jquery
+npm install bootstrap @types/bootstrap --save-dev 
+
+//需在`.angular-cli.json`中   jquery  bootstrap添加才能使用
+```
+
+## 3.安装组件
+
+```
+ng g component name  //创建新组建
+```
