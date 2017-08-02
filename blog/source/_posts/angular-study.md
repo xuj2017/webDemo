@@ -8,7 +8,7 @@ tags: angular
 ```
    $ npm install -g @angular/cli
    // ng -v 检测是否装好
-   // ng new auction 初始化angular项目基础架构
+   // ng new name --routing 初始化angular项目基础架构
 ```
 ```typescript
 @Component({//装饰器
@@ -37,3 +37,16 @@ npm install bootstrap @types/bootstrap --save-dev
 ```
 ng g component name  //创建新组建
 ```
+
+## 4.路由
+  ### 1.传递数据
+      ```javascript
+        //在查询参数中传递数据
+        /produst?id=1&name=2 => ActivatedRoute.queryParams[id]
+
+        //在路由路径中传递参数
+        {path:/product/:id} => .product/1 => ActivatedRoute.params[id]
+
+        //在路由配置中传递数据
+        {path:/product, compontent:ProducrComponent, data:[[isProd:true]}} => ActivatedRoute.data[0][isProd]
+      ```
