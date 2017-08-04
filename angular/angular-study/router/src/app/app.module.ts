@@ -8,6 +8,9 @@ import { ProdustComponent } from './produst/produst.component';
 import { Code404Component } from './code404/code404.component';
 import { CommentComponent } from './comment/comment.component';
 import { HeaderComponent } from './header/header.component';
+import { ProdustDescComponent } from './produst-desc/produst-desc.component';
+import { SellerComponent } from './seller/seller.component';
+import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +19,10 @@ import { HeaderComponent } from './header/header.component';
     ProdustComponent,
     Code404Component,
     CommentComponent,
-    HeaderComponent
+    HeaderComponent,
+    ProdustDescComponent,
+    SellerComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,

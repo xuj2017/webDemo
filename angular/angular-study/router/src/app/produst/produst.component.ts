@@ -17,3 +17,6 @@ export class ProdustComponent implements OnInit {
   }
 
 }
+export class Produst{
+  constructor(public id:number,public name:string){}
+}

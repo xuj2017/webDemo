@@ -1,7 +1,12 @@
-<a [routerLink]="['/']" >主页</a>
+<a [routerLink]="['/home']" >主页</a>
 <a [routerLink]="['/produst']" [queryParams] = "{id:1}">商品详情</a>
 <a [routerLink]="['/comment',2]" >评论</a>
 <a [routerLink]="['/header']" >头部</a>
+<!-- primary:'home'是控制主路由跳到home组件 -->
+<a [routerLink]="[{outlets:{primary:'home',aux:'chat'}}]" >开始聊天</a>
+<a [routerLink]="[{outlets:{aux: null}}]" >结束聊天</a>
 
 <input type="button" value="评论" (click)="toProductDetails()">
 <router-outlet></router-outlet>
+
+<router-outlet name="aux"></router-outlet>

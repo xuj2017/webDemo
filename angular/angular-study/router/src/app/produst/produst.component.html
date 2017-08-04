@@ -1,4 +1,11 @@
-<p>
-  这是商品组件
-  <span>商品id:{{produstId}}</span>
-</p>
+<div class="produst">
+  <p>
+    这是商品组件
+    <span>商品id:{{produstId}}</span>
+  </p>
+  <div>
+    <a [routerLink]="['./']">商品描述</a>
+    <a [routerLink]="['./seller',4]">销售员</a>
+  </div>
+  <router-outlet></router-outlet>
+</div>
