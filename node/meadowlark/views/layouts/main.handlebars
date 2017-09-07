@@ -9,10 +9,11 @@
     {{#if showTests}}
         <link rel="stylesheet" href="/vendor/mocha.css">
     {{/if}}
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery-2.0.2.min.js"></script>
 </head>
 <body>
-    <header><img src="/img/logo.jpg" alt="Meadowlark Travel Logo"></header>
+    {{!-- <header><img src="/img/logo.jpg" alt="Meadowlark Travel Logo"></header> --}}
     {{{body}}}
     {{{_sections.jquery}}}
     {{#if showTests}}
