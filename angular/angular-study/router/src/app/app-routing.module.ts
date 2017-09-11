@@ -45,7 +45,7 @@ const routes: Routes = [
     path:'comment/:id',
     component:CommentComponent,
     resolve:{
-      produst:ProdustResolve
+      // produst:ProdustResolve
     }
   },{
     path:'header',
@@ -59,6 +59,6 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers:[LoginGuard,ProdustResolve]
+  providers:[LoginGuard]
 })
 export class AppRoutingModule { }
