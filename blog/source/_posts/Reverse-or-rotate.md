@@ -1,8 +1,8 @@
 ---
 title: Reverse or rotate
+date: 2017-07-24 10:14:16
 tags: javascript
 categories: codewars
-date: 2017-07-24 10:14:16
 ---
 ## title
 The input is a string str of digits. Cut the string into chunks (a chunk here is a substring of the initial string) of size sz (ignore the last chunk if its size is less than sz).
@@ -15,7 +15,7 @@ If
 - `sz` is greater `(>)` than the length of `str` it is impossible to take a chunk of size `sz` hence return "".
 
 
-###example
+### example
 ```javascript
 revrot("123456987654", 6) --> "234561876549"
 revrot("123456987653", 6) --> "234561356789"
