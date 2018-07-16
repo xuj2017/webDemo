@@ -41,7 +41,7 @@ sorted([3,2,1],(a,b)=>b-a)//=> true
 
 ```
 ## 2.is-number
-> 判断是否为数字
+> 判断是否为数字[github](https://github.com/jonschlinkert/is-number)
 
 ```js
 module.exports = function(num) {
@@ -105,7 +105,7 @@ isNumber({});                // false
 
 ```
 ## 3.array-slice
-> 数组取值
+> 数组取值[github](https://github.com/jonschlinkert/array-slice)
 
 ```js
 module.exports = function slice(arr, start, end) {
@@ -148,7 +148,7 @@ slice(arr, 3, 6);
 
 
 ## 4.array-first 
-> 获取数组的第一个元素或者前n个元素
+> 获取数组的第一个元素或者前n个元素[github](https://github.com/jonschlinkert/array-first)
 
 ```js
 var isNumber = require('is-number');
@@ -188,3 +188,164 @@ first(['a', 'b', 'c', 'd', 'e', 'f'], 1);
 first(['a', 'b', 'c', 'd', 'e', 'f'], 3);
 //=> ['a', 'b', 'c']
 ```
+
+
+## 5.array-last
+
+> 获取数组的最后一个元素或者最后n个元素[github](https://github.com/jonschlinkert/array-last)
+
+```js
+  var isNumber = require('is-number');
+
+  module.exports = function last(arr, n) {
+    //判断是否为数组
+    if (!Array.isArray(arr)) {
+      throw new Error('expected the first argument to be an array');
+    }
+
+    //数组长度判断
+    var len = arr.length;
+    if (len === 0) {
+      return null;
+    }
+
+    //第二个参数初始化
+    n = isNumber(n) ? +n : 1;
+    if (n === 1) {
+      return arr[len - 1];
+    }
+
+    //通过while循环倒序取值，并返回相应的结果
+    var res = new Array(n);
+    while (n--) {
+      res[n] = arr[--len];
+    }
+    return res;
+  };
+```
+
+`Example`
+```js
+  var last = require('array-last');
+
+  last(['a', 'b', 'c', 'd', 'e', 'f']);
+  //=> 'f'
+
+  last(['a', 'b', 'c', 'd', 'e', 'f'], 1);
+  //=> 'f'
+
+  last(['a', 'b', 'c', 'd', 'e', 'f'], 3);
+  //=> ['d', 'e', 'f']
+```
+
+## 6.arr-flatten
+
+> 利用递归进行数组平坦化[github](https://github.com/jonschlinkert/arr-flatten)
+
+```js
+'use strict';
+
+module.exports = function (arr) {
+  return flat(arr, []);
+};
+
+function flat(arr, res) {
+  var i = 0, cur;
+  var len = arr.length;
+  for (; i < len; i++) {
+    cur = arr[i];
+    //判读该元素是否为数组，如果是则递归，否则将值push进res中(res为空数组)
+    Array.isArray(cur) ? flat(cur, res) : res.push(cur);
+  }
+  return res;
+}
+```
+`Example`
+
+```js
+var flatten = require('arr-flatten');
+
+flatten(['a', ['b', ['c']], 'd', ['e']]);
+//=> ['a', 'b', 'c', 'd', 'e']
+```
+
+## 7.dedupe
+
+> 删除数组中的重复的值[github](https://github.com/seriousManual/dedupe)
+
+```js
+function dedupe (client, hasher) {
+    hasher = hasher || JSON.stringify//后面用于将元素字符串化
+
+    const clone = []//保存最后的结果
+    const lookup = {} //用于判断元素是否重复
+
+    for (let i = 0; i < client.length; i++) {
+        let elem = client[i]
+        let hashed = hasher(elem)//JSON.stringify(elem)
+
+        if (!lookup[hashed]) {
+            clone.push(elem)
+            lookup[hashed] = true
+        }
+    }
+
+    return clone
+}
+
+module.exports = dedupe
+```
+`Example`
+
+```js
+var dedupe = require('dedupe')
+
+dedupe([1, 2, 2, 3])//result: [1, 2, 3]
+
+dedupe({a: 2}, {a: 1}, {a: 1}, {a: 1}) //result: [{a: 2}, {a: 1}]
+
+dedupe([{a: 2, b: 1}, {a: 1, b: 2}, {a: 1, b: 3}, {a: 1, b: 4}])//result: [{a: 2, b: 1}, {a: 1,b: 2}]
+```
+
+## 8.array-range
+
+> 通过给定的范围返回一个递增数组[github](https://github.com/mattdesl/array-range)
+
+```js
+module.exports = function newArray(start, end) {
+    var n0 = typeof start === 'number',//记录start是否为数字
+        n1 = typeof end === 'number'//记录end是否为数字
+
+    if (n0 && !n1) {//如果仅start为数字，则（0,start）
+        end = start
+        start = 0
+    } else if (!n0 && !n1) {//如果均不为数字，则（0,0）
+        start = 0
+        end = 0
+    }
+
+    start = start|0
+    end = end|0
+    var len = end-start//长度
+    if (len<0)
+        throw new Error('array length must be positive')
+    
+    var a = new Array(len)//最终返回值
+    for (var i=0, c=start; i<len; i++, c++)
+        a[i] = c
+    return a
+}
+```
+`Example`
+
+```js
+var range = require('array-range')
+range(3)       // -> [ 0, 1, 2 ]
+range(1, 4)    // -> [ 1, 2, 3 ]
+array(5).map( x => x*x )
+// -> [ 0, 1, 4, 9, 16 ]
+
+array(2, 10).filter( x => x%2===0 )
+// -> [ 2, 4, 6, 8 ]
+```
+
