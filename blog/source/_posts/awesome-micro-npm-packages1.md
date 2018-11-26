@@ -1,5 +1,5 @@
 ---
-title: node 小型库阅读(1)
+title: node 小型库阅读
 date: 2018-07-12 10:08:17
 tags:
 ---
@@ -348,4 +348,169 @@ array(5).map( x => x*x )
 array(2, 10).filter( x => x%2===0 )
 // -> [ 2, 4, 6, 8 ]
 ```
+## 9 arr-diff
 
+>从第一个数组中返回一个与其他数组值均不同的数组[github](https://github.com/jonschlinkert/arr-diff)
+
+```js
+module.exports = function diff(arr/*, arrays*/) {
+  var len = arguments.length;//参数的个数
+  var idx = 0;
+  while (++idx < len) {//++idx=>1
+    arr = diffArray(arr, arguments[idx]);
+  }
+  return arr;
+};
+
+//通过比对两个数组，返回一个不同于第二个数组值的新数组
+function diffArray(one, two) {
+  //如果two不是数组则直接返回one
+  if (!Array.isArray(two)) {
+    return one.slice();
+  }
+
+  var tlen = two.length//数组two的长度
+  var olen = one.length;//数组one的长度
+  var idx = -1;
+  var arr = [];
+
+  //++idx=>0
+  while (++idx < olen) {
+    var ele = one[idx];//去数组one的第一个值
+
+    //用于判断在数组two中是否存在ele
+    var hasEle = false;
+    for (var i = 0; i < tlen; i++) {
+      var val = two[i];
+
+      if (ele === val) {
+        hasEle = true;
+        break;
+      }
+    }
+
+    //不存在的话，就将值push进arr中
+    if (hasEle === false) {
+      arr.push(ele);
+    }
+  }
+  return arr;
+}
+```
+`Example`
+
+```js
+var diff = require('arr-diff');
+
+var a = ['a', 'b', 'c', 'd'];
+var b = ['b', 'c'];
+
+console.log(diff(a, b))
+//=> ['a', 'd']
+```
+
+## 10.filled-array
+
+> 返回一个有指定值填充的数组[github](https://github.com/sindresorhus/filled-array)
+
+```js
+module.exports = function (item, n) {
+	var ret = new Array(n);//新建一个长度为n的数组
+	var isFn = typeof item === 'function';//判断item是否为函数
+
+  //如果item不是函数且fill兼容的话，则使用fill方法填充值
+	if (!isFn && typeof ret.fill === 'function') {
+		return ret.fill(item);
+	}
+  //如果不支持fill，则通过循环填充
+  //当item是函数时，执行item
+	for (var i = 0; i < n; i++) {
+		ret[i] = isFn ? item(i, n, ret) : item;
+	}
+
+	return ret;
+};
+```
+`Example`
+
+```js
+const filledArray = require('filled-array');
+
+filledArray('x', 3);
+//=> ['x', 'x', 'x']
+
+filledArray(0, 3);
+//=> [0, 0, 0]
+
+filledArray(i => {
+	return (++i % 3 ? '' : 'Fizz') + (i % 5 ? '' : 'Buzz') || i;
+}, 15);
+//=> [1, 2, 'Fizz', 4, 'Buzz', 'Fizz', 7, 8, 'Fizz', 'Buzz', 11, 'Fizz', 13, 14, 'FizzBuzz']
+```
+## 11.map-obj
+> 映射对象的键值到新的对象中[github](https://github.com/sindresorhus/map-obj)
+
+```js
+//检测是否为对象
+const isObject = x =>
+	typeof x === 'object' &&
+	x !== null &&
+	!(x instanceof RegExp) &&
+	!(x instanceof Error) &&
+	!(x instanceof Date);
+
+module.exports = function mapObj(obj, fn, opts, seen) {
+	opts = Object.assign({
+		deep: false,
+		target: {}
+	}, opts);
+
+	seen = seen || new WeakMap();
+
+	if (seen.has(obj)) {
+		return seen.get(obj);
+	}
+
+	seen.set(obj, opts.target);
+
+	const target = opts.target;
+	delete opts.target;
+
+	for (const key of Object.keys(obj)) {
+		const val = obj[key];
+		const res = fn(key, val, obj);
+		let newVal = res[1];
+
+		if (opts.deep && isObject(newVal)) {
+			if (Array.isArray(newVal)) {
+				newVal = newVal.map(x => isObject(x) ? mapObj(x, fn, opts, seen) : x);
+			} else {
+				newVal = mapObj(newVal, fn, opts, seen);
+			}
+		}
+
+		target[res[0]] = newVal;
+	}
+
+	return target;
+};
+```
+
+## 12.map-array
+
+> 映射对象的键和值到数组中[github](https://github.com/parro-it/map-array)
+
+```js
+const map = require('map-obj');
+
+function mapToArray(obj, fn) {
+	let idx = 0;
+	const result = map(obj, (key, value) =>
+		[idx++, fn(key, value)]
+	);
+	result.length = idx;
+	return Array.from(result);
+}
+
+module.exports = mapToArray;
+```
