@@ -482,3 +482,170 @@ this.$route.query.id
   }
 </script>
 ```
+
+### 6 异步组件
+
+> 项目过大就会导致加载缓慢，利用异步组件实现按需加载可以提高加载速度
+
+```js
+//第一种
+Vue.component('async-webpack-example',resolve=>{
+    // 这个特殊的 `require` 语法将会告诉 webpack
+    // 自动将你的构建代码切割成多个包, 这些包
+    // 会通过 Ajax 请求加载
+    require(['./my-async-component'],resolve)
+})
+
+//第二种
+// 工厂函数返回 Promise
+Vue.component(
+  'async-webpack-example',
+  // 这个 `import` 函数会返回一个 `Promise` 对象。
+  () => import('./my-async-component')
+)
+
+
+// 工厂函数返回一个配置化组件对象
+const AsyncComponent = () => ({
+  // 需要加载的组件 (应该是一个 `Promise` 对象)
+  component: import('./MyComponent.vue'),
+  // 异步组件加载时使用的组件
+  loading: LoadingComponent,
+  // 加载失败时使用的组件
+  error: ErrorComponent,
+  // 展示加载时组件的延时时间。默认值是 200 (毫秒)
+  delay: 200,
+  // 如果提供了超时时间且组件加载也超时了，
+  // 则使用加载失败时使用的组件。默认值是：`Infinity`
+  timeout: 3000
+})
+```
+> 异步组件的渲染本质上其实就是执行2次或者2次以上的渲染, 先把当前组件渲染为注释节点, 当组件加载成功后, 通过 forceRender 执行重新渲染。或者是渲染为注释节点, 然后再渲染为loading节点, 在渲染为请求完成的组件
+
+路由的按需加载
+
+```js
+webpack< 2.4 时
+{
+  path:'/',
+  name:'home',
+  components:resolve=>require(['@/components/home'],resolve)
+}
+
+webpack> 2.4 时
+{
+  path:'/',
+  name:'home',
+  components:()=>import('@/components/home')
+}
+
+//import()方法由es6提出，import()方法是动态加载，返回一个Promise对象，then方法的参数是加载到的模块。类似于Node.js的require方法，主要import()方法是异步加载的。
+```
+
+### 7.动态组件
+做一个tan切换时就会涉及到组件的动态加载
+
+```js
+//动画
+<transition>
+    //缓存
+    <keep-alive> 
+        <component v-bind:is="currentTabComponent"></component>
+    </keep-alive>
+</transition>
+
+```
+
+### 8.递归组件
+
+如果开发一个 tree 组件,里面层级是根据后台数据决定的,这个时候就需要用到递归组件
+
+```js
+// 递归组件: 组件在它的模板内可以递归的调用自己，只要给组件设置name组件就可以了。
+// 设置那么House在组件模板内就可以递归使用了,不过需要注意的是，
+// 必须给一个条件来限制数量，否则会抛出错误: max stack size exceeded
+// 组件递归用来开发一些具体有未知层级关系的独立组件。比如：
+// 联级选择器和树形控件 
+// 递归组件必须设置name 和结束的阀值
+
+<template>
+  <div v-for="(item,index) in treeArr">
+      子组件，当前层级值： {{index}} <br/>
+      <!-- 递归调用自身, 后台判断是否不存在改值 -->
+      <tree :item="item.arr" v-if="item.flag"></tree>
+  </div>
+</template>
+<script>
+export default {
+  // 必须定义name，组件内部才能递归调用
+  name: 'tree',
+  data(){
+    return {}
+  },
+  // 接收外部传入的值
+  props: {
+     item: {
+      type:Array,
+      default: ()=>[]
+    }
+  }
+}
+</script>
+```
+
+### 9. [函数式组件](https://cn.vuejs.org/v2/guide/render-function.html#%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BB%84%E4%BB%B6)
+定义:无状态,无法实例化，内部没有任何生命周期处理方法 规则:在 2.3.0 之前的版本中，如果一个函数式组件想要接收 prop，则 props 选项是必须的。
+在 2.3.0 或以上的版本中，你可以省略 props 选项，所有组件上的特性都会被自动隐式解析为 prop
+在 2.5.0 及以上版本中，如果你使用了单文件组件(就是普通的.vue 文件),可以直接在 temp
+
+组件需要的一切都是通过 context 参数传递，它是一个包括如下字段的对象：
+
+- props：提供所有 prop 的对象
+- children: VNode 子节点的数组
+- slots: 一个函数，返回了包含所有插槽的对象
+- scopedSlots: (2.6.0+) 一个暴露传入的作用域插槽的对象。也以函数形式暴露普通插槽。
+- data：传递给组件的整个数据对象，作为 createElement 的第二个参数传入组件
+- parent：对父组件的引用
+- listeners: (2.3.0+) 一个包含了所有父组件为当前组件注册的事件监听器的对象。这是 data.on 的一个别名。
+- injections: (2.3.0+) 如果使用了 inject 选项，则该对象包含了应当被注入的属性。
+
+```js
+<template functional>
+  <div v-for="(item,index) in props.arr">{{item}}</div>
+</template>
+```
+
+### 10.components 和Vue.component
+```js
+//components:局部注册组件
+export default{
+    components:{home}
+}
+
+//Vue.component:全局注册组件
+Vue.component('home',home)
+```
+
+### 11 Vue.extend
+
+vue 组件中有些需要将一些元素挂载到元素上,这个时候 extend 就起到作用了
+
+```js
+// 创建构造器
+var Profile = Vue.extend({
+  template: '<p>{{extendData}}</br>实例传入的数据为:{{propsExtend}}</p>',//template对应的标签最外层必须只有一个标签
+  data: function () {
+    return {
+      extendData: '这是extend扩展的数据',
+    }
+  },
+  props:['propsExtend']
+})
+
+// 创建的构造器可以挂载到元素上,也可以通过 components 或 Vue.component()注册使用
+// 挂载到一个元素上。可以通过propsData传参.
+new Profile({propsData:{propsExtend:'我是实例传入的数据'}}).$mount('#app-extend')
+
+// 通过 components 或 Vue.component()注册
+Vue.component('Profile',Profile)
+```
