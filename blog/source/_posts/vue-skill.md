@@ -649,3 +649,333 @@ new Profile({propsData:{propsExtend:'我是实例传入的数据'}}).$mount('#ap
 // 通过 components 或 Vue.component()注册
 Vue.component('Profile',Profile)
 ```
+
+### 12.mixins
+> 有些组件有些重复的 js 逻辑,如校验手机验证码,解析时间等,mixins 就可以实现这种混入 mixins 值是一个数组
+
+```js
+const mixin={
+    created(){
+      this.dealTime()
+    },
+    methods:{
+      dealTime(){
+        console.log('这是mixin的dealTime里面的方法');
+      }
+  }
+}
+
+export default{
+  mixins:[mixin]
+}
+```
+
+### 13.vue.nextTick
+> 在下次 DOM 更新循环结束之后执行延迟回调。在修改数据之后立即使用这个方法，获取更新后的 DOM。
+
+vue在DOM更新是异步执行的，只要侦听到数据变化，Vue 将开启一个队列，并缓冲在同一事件循环中发生的所有数据变更。如果同一个 watcher 被多次触发，只会被推入到队列中一次。这种在缓冲时去除重复数据对于避免不必要的计算和 DOM 操作是非常重要的。然后，在下一个的事件循环“tick”中，Vue 刷新队列并执行实际 (已去重的) 工作。Vue 在内部对异步队列尝试使用原生的 Promise.then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0) 代替。
+```js
+Vue.component('example', {
+  template: '<span>{{ message }}</span>',
+  data: function () {
+    return {
+      message: '未更新'
+    }
+  },
+  methods: {
+    updateMessage: function () {
+      this.message = '已更新'
+      console.log(this.$el.textContent) // => '未更新'
+      this.$nextTick(function () {
+        console.log(this.$el.textContent) // => '已更新'
+      })
+    }
+  }
+})
+```
+
+因为 $nextTick() 返回一个 Promise 对象，所以你可以使用新的 ES2017 async/await 语法完成相同的事情：
+```js
+methods: {
+  updateMessage: async function () {
+    this.message = '已更新'
+    console.log(this.$el.textContent) // => '未更新'
+    await this.$nextTick()
+    console.log(this.$el.textContent) // => '已更新'
+  }
+}
+```
+
+### 14.Vue.directive
+> [用于自定义指令](https://cn.vuejs.org/v2/guide/custom-directive.html)
+
+```js
+<input v-focus>
+
+//局部注册
+directives: {
+  focus: {
+    // 指令的定义
+    inserted: function (el) {
+      el.focus()
+    }
+  }
+}
+```
+钩子函数
+1. bind 只调用一次，指令第一次绑定到元素时候调用，用这个钩子可以定义一个绑定时执行一次的初始化动作。
+2. inserted:被绑定的元素插入父节点的时候调用(父节点存在即可调用，不必存在document中)
+3. update: 被绑定与元素所在模板更新时调用，而且无论绑定值是否有变化，通过比较更新前后的绑定值，忽略不必要的模板更新
+4. componentUpdate :被绑定的元素所在模板完成一次更新更新周期的时候调用
+5. unbind: 只调用一次，指令月元素解绑的时候调用
+
+
+### 15.Vue.filter
+> 自定义过滤器，可被用于一些常见的文本格式化
+
+```js
+// 使用
+// 在双花括号中
+{{ message | capitalize }}
+
+// 在 `v-bind` 中
+<div v-bind:id="rawId | formatId"></div>
+
+// 全局注册
+Vue.filter('stampToYYMMDD', (value) =>{
+  // 处理逻辑
+})
+
+// 局部注册
+filters: {
+  stampToYYMMDD: (value)=> {
+    // 处理逻辑
+  }
+}
+
+// 多个过滤器全局注册
+// /src/common/filters.js
+let dateServer = value => value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3') 
+export { dateServer }
+// /src/main.js
+import * as custom from './common/filters/custom'
+Object.keys(custom).forEach(key => Vue.filter(key, custom[key]))
+
+```
+
+### 16.Vue.config.keyCodes
+> 自定义按键修饰符别名
+
+```js
+Vue.config.keyCodes = {
+  v: 86,
+  f1: 112,
+  // camelCase 不可用
+  mediaPlayPause: 179,
+  // 取而代之的是 kebab-case 且用双引号括起来
+  "media-play-pause": 179,
+  up: [38, 87]
+}
+//给 v-on 自定义键位别名。
+<input type="text" @keyup.media-play-pause="method">
+```
+
+### 17.Vue.config.performance
+
+> 监听性能：只适用于开发模式和支持 performance.mark API 的浏览器上
+
+```js
+Vue.config.performance = true
+```
+
+
+### 18.Vue.config.errorHandler && Vue.config.warnHandler
+
+> 指定组件的渲染和观察期间未捕获错误的处理函数。这个处理函数被调用时，可获取错误信息和 Vue 实例。
+
+```js
+Vue.config.errorHandler = function (err, vm, info) {
+  // handle error
+  // `info` 是 Vue 特定的错误信息，比如错误所在的生命周期钩子
+  // 只在 2.2.0+ 可用
+}
+```
+> 为 Vue 的运行时警告赋予一个自定义处理函数。注意这只会在开发者环境下生效，在生产环境下它会被忽略。
+
+```js
+Vue.config.warnHandler = function (msg, vm, trace) {
+  // `trace` 是组件的继承关系追踪
+}
+```
+
+### 19.v-pre
+> vue 是响应式系统,但是有些静态的标签不需要多次编译,这样可以节省性能
+
+```html
+<span v-pre>{{ this will not be compiled }}</span>   显示的是{{ this will not be compiled }}
+<span v-pre>{{msg}}</span>     即使data里面定义了msg这里仍然是显示的{{msg}}
+```
+
+### 20.v-cloak
+> 在网速慢的情况下,在使用vue绑定数据的时候，渲染页面时会出现变量闪烁
+用法:这个指令保持在元素上直到关联实例结束编译。和 CSS 规则如 [v-cloak] { display: none } 一起用时，这个指令可以隐藏未编译的 Mustache 标签直到实例准备完毕
+
+这样就可以解决闪烁,但是会出现白屏,这样可以结合骨架屏使用
+```html
+// template 中
+<div class="#app" v-cloak>
+    <p>{{value.name}}</p>
+</div>
+
+// css 中
+[v-cloak] {
+    display: none;
+}
+```
+
+### 21.v-once
+有些 template 中的静态 dom 没有改变,这时就只需要渲染一次,可以降低性能开销
+v-once 和 v-pre 的区别: v-once只渲染一次；v-pre不编译,原样输出
+
+```html
+<span v-once> 这时只需要加载一次的标签</span>
+```
+
+### 22.Object.freeze
+
+> 场景:一个长列表数据,一般不会更改,但是vue会做getter和setter的转换
+用法:是ES5新增的特性，可以冻结一个对象，防止对象被修改
+支持:vue 1.0.18+对其提供了支持，对于data或vuex里使用freeze冻结了的对象，vue不会做getter和setter的转换
+注意:冻结只是冻结里面的单个属性,引用地址还是可以更改
+
+```js
+new Vue({
+    data: {
+        // vue不会对list里的object做getter、setter绑定
+        list: Object.freeze([
+            { value: 1 },
+            { value: 2 }
+        ])
+    },
+    mounted () {
+        // 界面不会有响应,因为单个属性被冻结
+        this.list[0].value = 100;
+
+        // 下面两种做法，界面都会响应
+        this.list = [
+            { value: 100 },
+            { value: 200 }
+        ];
+        this.list = Object.freeze([
+            { value: 100 },
+            { value: 200 }
+        ]);
+    }
+})
+```
+
+### 23.调试 template
+
+> 在Vue开发过程中, 经常会遇到template模板渲染时JavaScript变量出错的问题, 此时也许你会通过console.log来进行调试 这时可以在开发环境挂载一个 log 函数
+
+```js
+// main.js
+Vue.prototype.$log = window.console.log;
+
+// 组件内部
+<div>{{$log(info)}}</div>
+```
+
+### 24.vue-loader 小技巧
+
+#### 1.preserveWhitespace
+> 开发 vue 代码一般会有空格,这个时候打包压缩如果不去掉空格会加大包的体积 配置preserveWhitespace可以减小包的体积
+
+```js
+{
+  vue: {
+    preserveWhitespace: false
+  }
+}
+```
+
+#### 2.transformToRequire
+> 以前在写 Vue 的时候经常会写到这样的代码：把图片提前 require 传给一个变量再传给组件
+
+```js
+// page 代码
+<template>
+  <div>
+    <avatar :img-src="imgSrc"></avatar>
+  </div>
+</template>
+<script>
+  export default {
+    created () {
+      this.imgSrc = require('./assets/default-avatar.png')
+    }
+  }
+</script>
+```
+现在:通过配置 transformToRequire 后，就可以直接配置，这样vue-loader会把对应的属性自动 require 之后传给组件
+
+```js
+// vue-cli 2.x在vue-loader.conf.js 默认配置是
+transformToRequire: {
+    video: ['src', 'poster'],
+    source: 'src',
+    img: 'src',
+    image: 'xlink:href'
+}
+
+// 配置文件,如果是vue-cli2.x 在vue-loader.conf.js里面修改
+  avatar: ['default-src']
+
+// vue-cli 3.x 在vue.config.js
+// vue-cli 3.x 将transformToRequire属性换为了transformAssetUrls
+module.exports = {
+  pages,
+  chainWebpack: config => {
+    config
+      .module
+        .rule('vue')
+        .use('vue-loader')
+        .loader('vue-loader')
+        .tap(options => {
+      options.transformAssetUrls = {
+        avatar: 'img-src',
+      }
+      return options;
+      });
+  }
+}
+
+// page 代码可以简化为
+<template>
+  <div>
+    <avatar img-src="./assets/default-avatar.png"></avatar>
+  </div>
+</template>
+```
+
+### 25.img 加载失败
+> 有些时候后台返回图片地址不一定能打开,所以这个时候应该加一张默认图片
+
+```js
+// page 代码
+<img :src="imgUrl" @error="handleError" alt="">
+<script>
+export default{
+  data(){
+    return{
+      imgUrl:''
+    }
+  },
+  methods:{
+    handleError(e){
+      e.target.src=reqiure('图片路径') //当然如果项目配置了transformToRequire,参考上面 27.2
+    }
+  }
+}
+</script>
+```
